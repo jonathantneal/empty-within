@@ -27,7 +27,7 @@ Add [Empty Within] to your build tool:
 npm install empty-within
 ```
 
-Activate [Empty Within] on the `document`:
+Activate [Empty Within] on the `document` or some other element:
 
 ```js
 import emptyWithin from 'empty-within';
@@ -35,7 +35,15 @@ import emptyWithin from 'empty-within';
 emptyWithin(document);
 ```
 
+You can also limit the scope of the DOM tree affected by [Empty Within].
+
+```js
+emptyWithin(document.querySelector('.my-only-form'));
+```
+
 ## Options
+
+### attr, className
 
 [Empty Within] accepts a secondary paramater to configure the attribute or
 class name added to elements matching empty editable fields or containing empty
@@ -51,6 +59,14 @@ emptyWithin(document, {
 Falsey values on either `attr` or `className` will disable setting the
 attribute or class name on elements matching empty editable fields or containing
 empty editable fields.
+
+### watchScope, watchValue
+
+The secondary paramater may also be used to determine how aggressive
+[Empty Within] watches the DOM tree. Setting `watchScope` to `false` will
+disable `MutationObserver` from watching for new editable fields added to the
+document. Setting `watchValue` to `false` will disable `Object.defineProperty`
+from capturing changes to editable fields by their `value` property.
 
 [npm-url]: https://www.npmjs.com/package/empty-within
 [npm-img]: https://img.shields.io/npm/v/empty-within.svg
