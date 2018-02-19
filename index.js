@@ -4,7 +4,9 @@ export default function emptyWithin(scope, opts) {
 
 	const {
 		attr = 'empty-within',
-		className = ''
+		className = '',
+		watchScope = true,
+		watchValue = true
 	} = Object(opts);
 
 	const emptyInputs = [];
@@ -64,43 +66,47 @@ export default function emptyWithin(scope, opts) {
 			if (target.nodeName === 'INPUT' || target.nodeName === 'TEXTAREA') {
 				onInputChange({ target });
 
-				const descriptor = {
-					enumerable: true,
-					configurable: true,
-					get() {
-						delete target.value;
+				if (watchValue) {
+					const descriptor = {
+						enumerable: true,
+						configurable: true,
+						get() {
+							delete target.value;
 
-						const value = target.value;
+							const value = target.value;
 
-						Object.defineProperty(target, 'value', descriptor);
+							Object.defineProperty(target, 'value', descriptor);
 
-						return value;
-					},
-					set(value) {
-						delete target.value;
+							return value;
+						},
+						set(value) {
+							delete target.value;
 
-						target.value = value;
+							target.value = value;
 
-						Object.defineProperty(target, 'value', descriptor);
+							Object.defineProperty(target, 'value', descriptor);
 
-						onInputChange({ target });
-					}
-				};
+							onInputChange({ target });
+						}
+					};
 
-				Object.defineProperty(target, 'value', descriptor);
+					Object.defineProperty(target, 'value', descriptor);
+				}
 			}
 		}
 
 		[].forEach.call(scope.querySelectorAll('input,textarea'), withTarget);
 
 		// watch for and update any new text fields
-		new MutationObserver(
-			mutations => mutations.forEach(
-				mutation => [].filter.call(mutation.addedNodes || []).forEach(withTarget)
-			)
-		).observe(scope, {
-			childList: true
-		});
+		if (watchScope) {
+			new MutationObserver(
+				mutations => mutations.forEach(
+					mutation => [].filter.call(mutation.addedNodes || []).forEach(withTarget)
+				)
+			).observe(scope, {
+				childList: true
+			});
+		}
 	}
 
 	/* Watch the document for any interactive state
