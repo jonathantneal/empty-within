@@ -1,0 +1,53 @@
+{
+  "name": "empty-within",
+  "version": "1.0.0",
+  "description": "Target elements based on whether they are empty editable fields or contain empty editable fields",
+  "author": "Jonathan Neal <jonathantneal@hotmail.com>",
+  "license": "CC0-1.0",
+  "repository": "jonathantneal/empty-within",
+  "homepage": "https://github.com/jonathantneal/empty-within#readme",
+  "bugs": "https://github.com/jonathantneal/empty-within/issues",
+  "main": "index.bundle.js",
+  "module": "index.js",
+  "files": [
+    "index.js",
+    "index.bundle.js"
+  ],
+  "scripts": {
+    "prepublishOnly": "npm test",
+    "pretest": "rollup -c .rollup.js --silent",
+    "test": "echo 'Running tests...'; npm run test:ec && npm run test:js",
+    "test:ec": "echint --ignore index.bundle.js test",
+    "test:js": "eslint *.js --cache --ignore-path .gitignore --quiet"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6",
+    "babel-eslint": "^8",
+    "babel-preset-env": "^1",
+    "echint": "^4",
+    "eslint": "^4",
+    "eslint-config-dev": "^2",
+    "pre-commit": "^1",
+    "rollup": "^0",
+    "rollup-plugin-babel": "^3"
+  },
+  "eslintConfig": {
+    "extends": "dev",
+    "parser": "babel-eslint"
+  },
+  "keywords": [
+    "javascript",
+    "js",
+    "empty",
+    "within",
+    "pseudos",
+    "selectors",
+    "forms",
+    "inputs",
+    "descendants",
+    "ancestors"
+  ]
+}
