@@ -36,7 +36,12 @@
   },
   "eslintConfig": {
     "extends": "dev",
-    "parser": "babel-eslint"
+    "parser": "babel-eslint",
+    "rules": {
+      "no-loop-func": [
+        0
+      ]
+    }
   },
   "keywords": [
     "javascript",

@@ -1,15 +1,26 @@
 export default function emptyWithin(document, opts) {
-	const { className = '', attr = 'empty-within' } = Object(opts);
+	/* Update elements on input change
+	/* ====================================================================== */
+
+	const {
+		attr = 'empty-within',
+		className = ''
+	} = Object(opts);
+
 	const emptyInputs = [];
 
-	function oninputchange(event) {
+	function onInputChange(event) {
+		// determine if the target’s empty state has changed
 		let element = event.target;
 		const emptyIndex = emptyInputs.indexOf(element);
+		const notEmptyIsNowEmpty = emptyIndex === -1 && !element.value;
+		const emptyisNowNotEmpty = emptyIndex !== -1 && element.value;
 
-		if (emptyIndex === -1 && !element.value) {
-			// if a non-empty input is now empty
+		if (notEmptyIsNowEmpty) {
+			// add the target to the list of empty elements
 			emptyInputs.push(element);
 
+			// update elements from the target to the document
 			while (element) {
 				if (attr) {
 					element.setAttribute(attr, '');
@@ -21,12 +32,14 @@ export default function emptyWithin(document, opts) {
 
 				element = element.parentElement;
 			}
-		} else if (emptyIndex !== -1 && element.value) {
-			// if an empty input has gained a value
+		} else if (emptyisNowNotEmpty) {
+			// remove the target from the list of empty elements
 			emptyInputs.splice(emptyIndex, 1);
 
+			// update elements from the target to the document
 			while (element && emptyInputs.every(
-				emptyInput => !element.contains(emptyInput) // eslint-disable-line no-loop-func
+				// or until another empty element affects the tree
+				emptyInput => !element.contains(emptyInput)
 			)) {
 				if (attr) {
 					element.removeAttribute(attr);
@@ -41,12 +54,15 @@ export default function emptyWithin(document, opts) {
 		}
 	}
 
-	function initialize() {
-		document.addEventListener('input', oninputchange);
+	/* Update elements when the plugin is initialized and the document is ready
+	/* ====================================================================== */
+
+	function onInitialized() {
+		document.addEventListener('input', onInputChange);
 
 		function withTarget(target) {
 			if (target.nodeName === 'INPUT' || target.nodeName === 'TEXTAREA') {
-				oninputchange({ target });
+				onInputChange({ target });
 
 				const descriptor = {
 					enumerable: true,
@@ -67,7 +83,7 @@ export default function emptyWithin(document, opts) {
 
 						Object.defineProperty(target, 'value', descriptor);
 
-						oninputchange({ target });
+						onInputChange({ target });
 					}
 				};
 
@@ -87,15 +103,15 @@ export default function emptyWithin(document, opts) {
 		});
 	}
 
-	/**
-	 * Callback wrapper for check loaded state
-	 */
+	/* Watch the document for any interactive state
+	/* ====================================================================== */
+
 	/* eslint-disable */
-	!function load() {
+	!function onDocumentInteractive() {
 		if (/i|c/.test(document.readyState)) {
-			document.removeEventListener('readystatechange', load) | initialize();
+			document.removeEventListener('readystatechange', onDocumentInteractive) | onInitialized();
 		} else {
-			document.addEventListener('readystatechange', load);
+			document.addEventListener('readystatechange', onDocumentInteractive);
 		}
 	}()
 	/* eslint-enable */
