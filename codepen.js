@@ -1,0 +1,1 @@
+require('empty-within')(document);

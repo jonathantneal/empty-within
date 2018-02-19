@@ -1,0 +1,24 @@
+{
+  "name": "empty-within-codepen",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "rollup -c .rollup.js --silent; gzip-size codepen.bundle.js"
+  },
+  "dependencies": {
+    "empty-within": "file:.."
+  },
+  "devDependencies": {
+    "babel-cli": "^6",
+    "babel-core": "^6",
+    "babel-preset-env": "^1",
+    "browserify": "^16",
+    "gzip-size-cli": "^2",
+    "rollup": "^0",
+    "rollup-plugin-babel": "^3",
+    "rollup-plugin-commonjs": "^8",
+    "rollup-plugin-node-resolve": "^3",
+    "rollup-plugin-uglify": "^3",
+    "uglify-js": "^3"
+  },
+  "private": true
+}
