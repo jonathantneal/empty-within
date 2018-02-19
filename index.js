@@ -1,4 +1,4 @@
-export default function emptyWithin(document, opts) {
+export default function emptyWithin(scope, opts) {
 	/* Update elements on input change
 	/* ====================================================================== */
 
@@ -20,8 +20,8 @@ export default function emptyWithin(document, opts) {
 			// add the target to the list of empty elements
 			emptyInputs.push(element);
 
-			// update elements from the target to the document
-			while (element) {
+			// update elements from the target to the scope
+			while (element && scope.contains(element)) {
 				if (attr) {
 					element.setAttribute(attr, '');
 				}
@@ -36,8 +36,8 @@ export default function emptyWithin(document, opts) {
 			// remove the target from the list of empty elements
 			emptyInputs.splice(emptyIndex, 1);
 
-			// update elements from the target to the document
-			while (element && emptyInputs.every(
+			// update elements from the target to the scope
+			while (element && scope.contains(element) && emptyInputs.every(
 				// or until another empty element affects the tree
 				emptyInput => !element.contains(emptyInput)
 			)) {
@@ -58,7 +58,7 @@ export default function emptyWithin(document, opts) {
 	/* ====================================================================== */
 
 	function onInitialized() {
-		document.addEventListener('input', onInputChange);
+		scope.addEventListener('input', onInputChange);
 
 		function withTarget(target) {
 			if (target.nodeName === 'INPUT' || target.nodeName === 'TEXTAREA') {
@@ -91,20 +91,22 @@ export default function emptyWithin(document, opts) {
 			}
 		}
 
-		[].forEach.call(document.querySelectorAll('input,textarea'), withTarget);
+		[].forEach.call(scope.querySelectorAll('input,textarea'), withTarget);
 
 		// watch for and update any new text fields
 		new MutationObserver(
 			mutations => mutations.forEach(
 				mutation => [].filter.call(mutation.addedNodes || []).forEach(withTarget)
 			)
-		).observe(document, {
+		).observe(scope, {
 			childList: true
 		});
 	}
 
 	/* Watch the document for any interactive state
 	/* ====================================================================== */
+
+	const document = scope.ownerDocument || scope;
 
 	/* eslint-disable */
 	!function onDocumentInteractive() {
